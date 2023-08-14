@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Marks Checker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .container {
+    width: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input[type="number"] {
+    width: 60px;
+    padding: 5px;
+  }
+
+  button {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #result {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .subject-grade {
+    margin-left: 10px;
+    font-weight: bold;
+  }
+
+  .warning {
+    color: rgb(255, 174, 0);
+  }
+
+  .mark-input-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-items: center;
+  }
+
+  .mark-input-container div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Exam Marks Checker</h2>
+  <form id="marksForm">
+    <div class="mark-input-container">
+      <div>
+        <label for="myanmar">Myanmar:</label>
+        <input type="number" id="myanmar" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+      <div>
+        <label for="english">English:</label>
+        <input type="number" id="english" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+      <div>
+        <label for="math">Math:</label>
+        <input type="number" id="math" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+      <div>
+        <label for="science">Science:</label>
+        <input type="number" id="science" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+      <div>
+        <label for="social">Social:</label>
+        <input type="number" id="social" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+      <div>
+        <label for="business">Business:</label>
+        <input type="number" id="business" min="0" max="100" required>
+        <span class="subject-grade"></span>
+      </div>
+    </div>
+    <div class="row">
+      <button type="button" onclick="calculateResult()">Submit</button>
+      <button type="button" onclick="clearForm()">Clear</button>
+    </div>
+  </form>
+  <div id="result"></div>
+</div>
+
+<script>
+  function calculateResult() {
+    const myanmarMarks = parseFloat(document.getElementById('myanmar').value);
+    const englishMarks = parseFloat(document.getElementById('english').value);
+    const mathMarks = parseFloat(document.getElementById('math').value);
+    const scienceMarks = parseFloat(document.getElementById('science').value);
+    const socialMarks = parseFloat(document.getElementById('social').value);
+    const businessMarks = parseFloat(document.getElementById('business').value);
+
+    if (
+      isNaN(myanmarMarks) || isNaN(englishMarks) || isNaN(mathMarks) ||
+      isNaN(scienceMarks) || isNaN(socialMarks) || isNaN(businessMarks)
+    ) {
+      document.getElementById('result').innerHTML = "<h5 class='warning'>Please fill in all marks.</h5>";
+      return;
+    }
+
+    if (
+      myanmarMarks > 100 || englishMarks > 100 || mathMarks > 100 ||
+      scienceMarks > 100 || socialMarks > 100 || businessMarks > 100
+    ) {
+      document.getElementById('result').innerHTML = "<h5 class='warning'>Please insert correct marks (0-100).</h5>";
+      return;
+    }
+
+    const subjectGrades = {
+      Myanmar: getSubjectGrade(myanmarMarks),
+      English: getSubjectGrade(englishMarks),
+      Math: getSubjectGrade(mathMarks),
+      Science: getSubjectGrade(scienceMarks),
+      Social: getSubjectGrade(socialMarks),
+      Business: getSubjectGrade(businessMarks)
+    };
+
+    let resultMessage = "";
+
+    if (Object.values(subjectGrades).includes('Fail')) {
+      resultMessage += "<h3 style='color: red; text-align: center;'>Fail</h3>";
+    } else {
+      resultMessage += "<h3 style='color: green; text-align: center;'>Pass</h3>";
+    }
+
+    resultMessage += "<h4>Individual Subject Grades:</h4>";
+
+    for (const subject in subjectGrades) {
+      resultMessage += `${subject}: <span style='color: ${getGradeColor(subjectGrades[subject])}'>${subjectGrades[subject]}</span><br>`;
+    }
+
+    document.getElementById('result').innerHTML = resultMessage;
+  }
+
+  function clearForm() {
+    document.getElementById('myanmar').value = '';
+    document.getElementById('english').value = '';
+    document.getElementById('math').value = '';
+    document.getElementById('science').value = '';
+    document.getElementById('social').value = '';
+    document.getElementById('business').value = '';
+    document.getElementById('result').innerHTML = '';
+  }
+
+  function getSubjectGrade(marks) {
+    if (marks >= 90) {
+      return 'A+';
+    } else if (marks >= 80) {
+      return 'A';
+    } else if (marks >= 70) {
+      return 'B';
+    } else if (marks >= 60) {
+      return 'C';
+    } else if (marks >= 40) {
+      return 'D';
+    } else {
+      return 'Fail';
+    }
+  }
+
+  function getGradeColor(grade) {
+    return grade === 'Fail' ? 'red' : 'green';
+  }
+</script>
+</body>
+</html>
